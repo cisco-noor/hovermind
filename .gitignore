@@ -1,0 +1,30 @@
+# Build
+.build/
+DerivedData/
+build/
+*.dSYM
+
+# Xcode
+xcuserdata/
+*.xcworkspace
+*.xcodeproj
+
+# Swift Package Manager
+.swiftpm/
+Package.resolved
+
+# macOS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+
+# Secrets / credentials
+*.env
+*.pem
+*.key
+*.p12
+
+# App bundle (built artifact)
+HoverMind.app/

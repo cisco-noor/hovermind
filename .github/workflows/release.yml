@@ -1,0 +1,33 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+jobs:
+  release:
+    runs-on: macos-15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build release
+        run: swift build -c release
+
+      - name: Package app bundle
+        run: |
+          VERSION=${GITHUB_REF_NAME#v}  # Strip 'v' prefix: v0.1.0 -> 0.1.0
+          mkdir -p HoverMind.app/Contents/MacOS
+          cp Info.plist HoverMind.app/Contents/Info.plist
+          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion ${VERSION}" HoverMind.app/Contents/Info.plist
+          /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString ${VERSION}" HoverMind.app/Contents/Info.plist
+          cp .build/release/HoverMind HoverMind.app/Contents/MacOS/
+          codesign --force --sign - HoverMind.app
+          zip -r HoverMind-${VERSION}-macOS.zip HoverMind.app
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: HoverMind-*.zip
+          generate_release_notes: true
